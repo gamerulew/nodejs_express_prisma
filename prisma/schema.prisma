@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model Authority {
+  role        Role            @id @unique
+  description String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @default(now())
+  users       UserAuthority[]
+
+  @@map("authorities")
+}
+
+model User {
+  id          String          @id @default(uuid())
+  name        String
+  login       String          @unique
+  email       String          @unique
+  password    String
+  avatar      String?
+  authorities UserAuthority[]
+  googleId    String?         @unique
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @default(now())
+
+  Post    Post[]
+  Comment Comment[]
+  @@map("users")
+}
+
+model UserAuthority {
+  userId        String
+  authorityRole Role
+  user          User      @relation(fields: [userId], references: [id])
+  authority     Authority @relation(fields: [authorityRole], references: [role])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now())
+
+  @@id([userId, authorityRole])
+  @@unique([userId, authorityRole])
+  @@map("user_authorities")
+}
+
+model PostFile {
+  id        String   @id @default(uuid())
+  path      String
+  Post      Post     @relation(fields: [postId], references: [id])
+  postId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@map("post_files")
+}
+
+model Post {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  likes     Int
+  deslike   Int
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  Comment  Comment[]
+  PostFile PostFile[]
+
+  @@map("posts")
+}
+
+model Comment {
+  id        String    @id @default(uuid())
+  content   String
+  likes     Int
+  deslike   Int
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  String
+  post      Post      @relation(fields: [postId], references: [id])
+  postId    String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  anwser    Comment   @relation("anwser", fields: [anwserId], references: [id])
+  Comment   Comment[] @relation("anwser")
+  anwserId  String
+
+
+  @@map("comments")
+}
