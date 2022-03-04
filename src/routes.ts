@@ -2,6 +2,8 @@ import { Role } from '@prisma/client';
 import { Router } from 'express';
 import AuthController from './controllers/AuthController';
 import AuthorityController from './controllers/AuthorityController';
+import CommentController from './controllers/CommentController';
+import PostController from './controllers/PostController';
 import UserController from './controllers/UserController';
 import ensureAuth from './services/auth/ensureAuth';
 import verifyPermission from './services/auth/verifyPermission';
@@ -25,5 +27,14 @@ const authorityController = new AuthorityController();
 router.get('/authorities', authorityController.findAll);
 router.post('/authorities', authorityController.create);
 
+// POST
+const postController = new PostController();
+router.post('/posts', ensureAuth, postController.create);
+router.get('/posts', ensureAuth, postController.findAll);
+
+// COMMENT
+const commentController = new CommentController();
+router.post('/comments', ensureAuth, commentController.create);
+router.get('/comments', ensureAuth, commentController.findAll);
 
 export default router;

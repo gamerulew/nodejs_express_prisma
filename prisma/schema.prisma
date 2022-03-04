@@ -70,8 +70,8 @@ model Post {
   id        String   @id @default(uuid())
   title     String
   content   String
-  likes     Int
-  deslike   Int
+  likes     Int      @default(0)
+  deslike   Int      @default(0)
   author    User     @relation(fields: [authorId], references: [id])
   authorId  String
   createdAt DateTime @default(now())
@@ -86,8 +86,8 @@ model Post {
 model Comment {
   id        String    @id @default(uuid())
   content   String
-  likes     Int
-  deslike   Int
+  likes     Int       @default(0)
+  deslike   Int       @default(0)
   author    User      @relation(fields: [authorId], references: [id])
   authorId  String
   post      Post      @relation(fields: [postId], references: [id])
